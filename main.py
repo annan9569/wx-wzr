@@ -182,10 +182,6 @@ def send_message(to_user, access_token, region_name, weather, temp, wind_dir, no
                 "value": love_days,
                 "color": get_color()
             },
-            "keChen": {
-                "value": keChen,
-                "color": get_color()
-            }
             "note_en": {
                 "value": note_en,
                 "color": get_color()
@@ -193,9 +189,14 @@ def send_message(to_user, access_token, region_name, weather, temp, wind_dir, no
             "note_ch": {
                 "value": note_ch,
                 "color": get_color()
+          },
+            "keChen": {
+                "value": keChen,
+                "color": get_color()
             }
         }
     }
+    
     for key, value in birthdays.items():
         # 获取距离下次生日的时间
         birth_day = get_birthday(value["birthday"], year, today)
