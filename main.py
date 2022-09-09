@@ -29,8 +29,7 @@ def get_access_token():
         sys.exit(1)
     # print(access_token)
     return access_token
- 
- 
+  
 def get_weather(region):
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
@@ -59,7 +58,7 @@ def get_weather(region):
     # 风向
     wind_dir = response["now"]["windDir"]
     return weather, temp, wind_dir
- 
+
  
 def get_birthday(birthday, year, today):
     birthday_year = birthday.split("-")[0]
@@ -114,7 +113,6 @@ def get_ciba():
     note_ch = r.json()["note"]
     return note_ch, note_en
  
- 
 def send_message(to_user, access_token, region_name, weather, temp, wind_dir, note_ch, note_en):
     url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token={}".format(access_token)
     week_list = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"]
@@ -135,6 +133,24 @@ def send_message(to_user, access_token, region_name, weather, temp, wind_dir, no
     for k, v in config.items():
         if k[0:5] == "birth":
             birthdays[k] = v
+    #获取明日课程
+    if week == "星期日":
+        keChen = config["zhou1"]
+    elif week == "星期一":
+        keChen = config["zhou2"]
+    elif week == "星期二":
+        keChen = config["zhou3"]
+    elif week == "星期三":
+        keChen = config["zhou4"]
+    elif week == "星期四":
+        keChen = config["zhou5"]
+    elif week == "星期五":
+        keChen = config["zhou6"]
+    elif week == "星期六":
+        keChen = config["zhou7"]
+    else:
+        keChen = "课程错误"
+   
     data = {
         "touser": to_user,
         "template_id": config["template_id"],
@@ -172,9 +188,14 @@ def send_message(to_user, access_token, region_name, weather, temp, wind_dir, no
             "note_ch": {
                 "value": note_ch,
                 "color": get_color()
+            },
+            "keChen": {
+                "value": keChen,
+                "color": get_color()
             }
         }
     }
+
     for key, value in birthdays.items():
         # 获取距离下次生日的时间
         birth_day = get_birthday(value["birthday"], year, today)
@@ -184,6 +205,7 @@ def send_message(to_user, access_token, region_name, weather, temp, wind_dir, no
             birthday_data = "距离{}的生日还有{}天".format(value["name"], birth_day)
         # 将生日数据插入data
         data["data"][key] = {"value": birthday_data, "color": get_color()}
+
     headers = {
         'Content-Type': 'application/json',
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
